@@ -21,4 +21,15 @@ public class Forecast {
     public void setWeather(List<Weather> weather) {
         this.weather = weather;
     }
+
+    @Override
+    public String toString() {
+        String forecast =  "Forecast{" +
+                "weathers=[" ;
+        for(int i = 0; i < getWeather().size(); i++){
+            forecast += weather.get(i).toString() + (i == getWeather().size()-1 ? "" : ",");
+        }
+        forecast += "]}";
+        return forecast;
+    }
 }
