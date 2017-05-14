@@ -14,11 +14,6 @@ public class Response {
     public Response() {
     }
 
-    public Response(String cod, List<Forecast> list) {
-        this.cod = cod;
-        this.list = list;
-    }
-
     public String getCod() {
         return cod;
     }
@@ -35,15 +30,5 @@ public class Response {
         this.list = list;
     }
 
-    @Override
-    public String toString() {
-        String resp = "Response{" +
-                "cod='" + cod + '\'' +
-                ", list=[";
-        for(int i = 0; i < getList().size(); i++){
-            resp += list.get(i).toString() + (i == getList().size()-1 ? "" : ",");
-        }
-        resp += "]}";
-        return resp;
-    }
+
 }

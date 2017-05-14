@@ -1,9 +1,9 @@
 package com.example.sunshineiak3;
 
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.app.Service;
+import android.content.Intent;
+import android.os.IBinder;
+import android.support.annotation.Nullable;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -18,21 +18,25 @@ import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+/**
+ * Created by qornanali on 5/14/17.
+ */
 
-    RecyclerView rvWeathers;
+public class TodayService extends Service {
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    public void onCreate() {
+        getTodayData();
+    }
 
-        rvWeathers = (RecyclerView) findViewById(R.id.rv_weathers);
-        rvWeathers.setLayoutManager(new LinearLayoutManager(this));
-
+    private void getTodayData(){
         RequestQueue varRequestQueue = Volley.newRequestQueue(this);
         String varUrl = "http://api.openweathermap.org/data/2.5/forecast?q=Bandung&appid=76e4c41b9a2ca1ffe283f667a6529896";
 
@@ -46,10 +50,10 @@ public class MainActivity extends AppCompatActivity {
                                 responseResult = gson.fromJson
                                 (response.toString(),
                                         com.example.sunshineiak3.data.model.Response.class);
-                        List<Weather> cuacaBuatTampil = getWeathers(responseResult);
-                        WeatherListAdapter adapter = new WeatherListAdapter(cuacaBuatTampil);
-                        rvWeathers.setAdapter(adapter);
-//                        rvWeathers.setAdapter(new WeatherListAdapter(getWeathers(responseResult)));
+                        List<Forecast> forecastList = responseResult.getList();
+                        List<Weather> weatherList = forecastList.get(0).getWeather();
+                        Weather today = weatherList.get(0);
+                        Toast.makeText(TodayService.this, today.getDescription(), Toast.LENGTH_SHORT).show();
                     }
                 }, new Response.ErrorListener() {
                     @Override
@@ -59,19 +63,4 @@ public class MainActivity extends AppCompatActivity {
                 });
         varRequestQueue.add(varJsonObjectRequest);
     }
-
-    private List<Weather> getWeathers(com.example.sunshineiak3.data.model.Response response){
-        List<Weather> weatherList = new ArrayList<>();
-
-        //ini for each
-        for(Forecast forecast : response.getList()){
-            for(Weather weather : forecast.getWeather()){
-                weatherList.add(weather);
-            }
-        }
-
-        return weatherList;
-    }
 }
-
-
