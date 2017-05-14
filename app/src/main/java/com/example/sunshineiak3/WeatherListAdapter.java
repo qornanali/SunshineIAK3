@@ -6,15 +6,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.sunshineiak3.data.model.Forecast;
 import com.example.sunshineiak3.data.model.Weather;
 
 import java.util.List;
 
 public class WeatherListAdapter extends RecyclerView.Adapter<WeatherListAdapter.ViewHolder> {
 
-    private final List<Weather> mValues;
+    private final List<Forecast> mValues;
 
-    public WeatherListAdapter(List<Weather> items) {
+    public WeatherListAdapter(List<Forecast> items) {
         mValues = items;
     }
 
@@ -28,8 +29,10 @@ public class WeatherListAdapter extends RecyclerView.Adapter<WeatherListAdapter.
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(String.valueOf(mValues.get(position).getId()));
-        holder.mContentView.setText(mValues.get(position).getDescription());
+        Weather weather = holder.mItem.getWeather().get(0);
+        holder.mIdView.setText(String.valueOf(weather.getId()));
+        holder.mContentView.setText(weather.getDescription());
+        holder.mDateView.setText(holder.mItem.getDt_txt());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -48,13 +51,15 @@ public class WeatherListAdapter extends RecyclerView.Adapter<WeatherListAdapter.
         public final View mView;
         public final TextView mIdView;
         public final TextView mContentView;
-        public Weather mItem;
+        public final TextView mDateView;
+        public Forecast mItem;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
             mIdView = (TextView) view.findViewById(R.id.id);
             mContentView = (TextView) view.findViewById(R.id.content);
+            mDateView = (TextView) view.findViewById(R.id.date);
         }
 
         @Override

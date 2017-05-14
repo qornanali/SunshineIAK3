@@ -1,5 +1,6 @@
 package com.example.sunshineiak3;
 
+import android.provider.CalendarContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,8 +19,12 @@ import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,15 +35,28 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        String tanggal = "2017-05-14 06:00:00";
+        try {
+            Date datenow = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(tanggal);
+            Calendar calNow = Calendar.getInstance();
+            calNow.setTime(datenow);
+
+            int month = calNow.get(Calendar.MONTH);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+
         rvWeathers = (RecyclerView) findViewById(R.id.rv_weathers);
         rvWeathers.setLayoutManager(new LinearLayoutManager(this));
 
         RequestQueue varRequestQueue = Volley.newRequestQueue(this);
-        String varUrl = "http://api.openweathermap.org/data/2.5/forecast?q=Bandung&appid=76e4c41b9a2ca1ffe283f667a6529896";
+        String varApiKey = "76e4c41b9a2ca1ffe283f667a6529896";
+        String varEndPoint = "http://api.openweathermap.org/data/2.5/forecast?q=Bandung&appid="+varApiKey;
 
         JsonObjectRequest varJsonObjectRequest =
                 new JsonObjectRequest(Request.Method.GET,
-                        varUrl, null, new Response.Listener<JSONObject>() {
+                        varEndPoint, null, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         Gson gson = new Gson();
@@ -46,10 +64,8 @@ public class MainActivity extends AppCompatActivity {
                                 responseResult = gson.fromJson
                                 (response.toString(),
                                         com.example.sunshineiak3.data.model.Response.class);
-                        List<Weather> cuacaBuatTampil = getWeathers(responseResult);
-                        WeatherListAdapter adapter = new WeatherListAdapter(cuacaBuatTampil);
+                        WeatherListAdapter adapter = new WeatherListAdapter(responseResult.getList());
                         rvWeathers.setAdapter(adapter);
-//                        rvWeathers.setAdapter(new WeatherListAdapter(getWeathers(responseResult)));
                     }
                 }, new Response.ErrorListener() {
                     @Override
@@ -59,19 +75,17 @@ public class MainActivity extends AppCompatActivity {
                 });
         varRequestQueue.add(varJsonObjectRequest);
     }
-
-    private List<Weather> getWeathers(com.example.sunshineiak3.data.model.Response response){
-        List<Weather> weatherList = new ArrayList<>();
-
-        //ini for each
-        for(Forecast forecast : response.getList()){
-            for(Weather weather : forecast.getWeather()){
-                weatherList.add(weather);
-            }
-        }
-
-        return weatherList;
-    }
+//
+//    private List<Forecast> getForecasts(com.example.sunshineiak3.data.model.Response response){
+//        List<Forecast> forecastList = new ArrayList<>();
+//
+//        //ini for each
+//        for(Forecast forecast : response.getList()){
+//            forecastList.add(forecast);
+//        }
+//
+//        return forecastList;
+//    }
 }
 
 
